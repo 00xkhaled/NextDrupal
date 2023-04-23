@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  silta: silta/silta@0.1.130
+  silta: silta/silta@0.1
 
 executors:
   cicd81:
@@ -11,7 +11,12 @@ executors:
 workflows:
   commit:
     jobs:
-  
+      - silta/drupal-validate:
+          name: validate
+          executor: cicd81
+          post-validation:
+            - run: echo "You can add additional validation here!"
+
       - silta/analyze:
           name: analyze
           context: analyze
