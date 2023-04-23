@@ -12,18 +12,18 @@ workflows:
   commit:
     jobs:
       - silta/drupal-validate:
-          name: validate
+          name: Validate Drupal code
           executor: cicd81
           post-validation:
             - run: echo "You can add additional validation here!"
 
       - silta/analyze:
-          name: analyze
+          name: Analyze code
           context: analyze
           sources: web
 
       - silta/drupal-build-deploy: &build-deploy
-          name: build-deploy
+          name: Build and deploy Drupal
           executor: cicd81
           codebase-build:
             - silta/drupal-composer-install
@@ -38,7 +38,7 @@ workflows:
       - silta/drupal-build-deploy:
           # Extend the build-deploy configuration for the production environment.
           <<: *build-deploy
-          name: build-deploy-prod
+          name: Build and deploy Drupal to production
           silta_config: silta/silta.yml,silta/silta-prod.yml
           context: silta_finland
           filters:
@@ -47,21 +47,18 @@ workflows:
 
       - silta/drupal-build-deploy:
           <<: *build-deploy
-          name: build-dependabot
+          name: Build and deploy Dependabot
           context: silta_dev
           skip-deployment: true
           filters:
             branches:
               only: /dependabot\/.*/
 
-      # silta/frontend-build-deploy is defined here https://github.com/wunderio/silta-circleci/blob/master/orb/jobs/%40frontend.yml
-      # &build-deploy is a yaml anchor, so we can reference it later
       - silta/frontend-build-deploy: &frontend-build-deploy
-          name: Silta build & deploy
+          name: Build and deploy frontend
           context: silta_dev
           silta_config: silta/silta.yml
           codebase-build:
-            # npm-install-build command is defined here https://github.com/wunderio/silta-circleci/blob/master/orb/commands/@npm.yml
             - silta/npm-install-build
           filters:
             branches:
@@ -69,11 +66,10 @@ workflows:
                 - production
                 - /dependabot\/.*/
 
-
       - silta/frontend-build-deploy:
           # Extend the build-deploy configuration for the production environment.
           <<: *frontend-build-deploy
-          name: Silta build & deploy production
+          name: Build and deploy frontend to production
           context: silta_finland
           silta_config: silta/silta.yml,silta/silta-prod.yml
           filters:
@@ -82,9 +78,10 @@ workflows:
 
       - silta/frontend-build-deploy:
           <<: *frontend-build-deploy
-          name: Build Dependabot
+          name: Build Dependabot frontend
           context: silta_dev
           skip-deployment: true
           filters:
             branches:
               only: /dependabot\/.*/
+
