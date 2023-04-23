@@ -11,12 +11,7 @@ executors:
 workflows:
   commit:
     jobs:
-      - silta/drupal-validate:
-          name: validate
-          executor: cicd81
-          post-validation:
-            - run: echo "You can add additional validation here!"
-
+  
       - silta/analyze:
           name: analyze
           context: analyze
